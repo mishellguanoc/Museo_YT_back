@@ -1,0 +1,71 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo principal: Reserva
+model Reserva {
+  id                String      @id @default(cuid())
+  nombreResponsable String
+  cedula            String
+  correo            String
+  telefono          String
+  fecha             DateTime    @db.Date
+  hora              String      // Formato: "09:00", "10:00", etc.
+  numeroPersonas    Int
+  estado            EstadoReserva @default(CONFIRMADO)
+  
+  // Relaciones
+  visitantes        Visitante[]
+  feedback          Feedback?
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([fecha, hora])
+  @@index([estado])
+  @@map("reservas")
+}
+
+// Modelo: Visitante (personas en la reserva)
+model Visitante {
+  id        String   @id @default(cuid())
+  nombre    String
+  cedula    String
+  reservaId String
+  
+  // Relación con Reserva
+  reserva   Reserva  @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@map("visitantes")
+}
+
+// Modelo: Feedback (retroalimentación post-visita)
+model Feedback {
+  id          String   @id @default(cuid())
+  reservaId   String   @unique
+  calificacion Int     // 1-5 estrellas
+  comentario  String?  @db.Text
+  
+  // Relación con Reserva
+  reserva     Reserva  @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+
+  @@map("feedbacks")
+}
+
+// Enum: Estado de la reserva
+enum EstadoReserva {
+  CONFIRMADO
+  CANCELADO
+}
