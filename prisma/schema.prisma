@@ -64,6 +64,19 @@ model Feedback {
   @@map("feedbacks")
 }
 
+// Modelo: Admin (usuarios administradores)
+model Admin {
+  id        String   @id @default(cuid())
+  usuario   String   @unique
+  password  String
+  nombre    String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
 // Enum: Estado de la reserva
 enum EstadoReserva {
   CONFIRMADO

@@ -15,7 +15,7 @@ export class AdminService {
     const fechaFin = new Date(fecha);
     fechaFin.setHours(23, 59, 59, 999);
 
-    const reservas = await this.prisma.reserva.findMany({
+    return await this.prisma.reserva.findMany({
       where: {
         fecha: {
           gte: fechaInicio,
@@ -31,7 +31,7 @@ export class AdminService {
     });
 
     // Formatear la respuesta para el administrador
-    return reservas.map((reserva) => ({
+   /*  return reservas.map((reserva) => ({
       id: reserva.id,
       hora: reserva.hora,
       responsable: reserva.nombreResponsable,
@@ -42,7 +42,7 @@ export class AdminService {
       estado: reserva.estado,
       visitantes: reserva.visitantes.length,
       createdAt: reserva.createdAt,
-    }));
+    })); */
   }
 
   /**

@@ -7,6 +7,7 @@ import { ReservasModule } from './reservas/reservas.module';
 import { AdminModule } from './admin/admin.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { MailModule } from './mail/mail.module';
+import { AuthModule } from './auth/auth.module';
 import { Module } from '@nestjs/common';
 
 @Module({
@@ -15,6 +16,7 @@ import { Module } from '@nestjs/common';
       isGlobal: true,
     }),
     PrismaModule,
+    AuthModule,
     HorariosModule,
     ReservasModule,
     AdminModule,
