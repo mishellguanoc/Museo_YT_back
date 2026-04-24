@@ -11,6 +11,12 @@ export class HorariosService {
    * Calcula los cupos disponibles considerando las reservas existentes
    */
   async obtenerHorariosDisponibles(fecha: Date) {
+    // Verificar que no sea sábado (6) ni domingo (0)
+    const diaSemana = new Date(fecha).getUTCDay();
+    if (diaSemana === 0 || diaSemana === 6) {
+      return [];
+    }
+
     // Convertir fecha a formato Date para la consulta
     const fechaInicio = new Date(fecha);
     fechaInicio.setHours(0, 0, 0, 0);

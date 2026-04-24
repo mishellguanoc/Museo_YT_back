@@ -20,7 +20,7 @@ export class ReservasController {
     const resultado = await this.reservasService.crearReserva(createReservaDto);
 
     // Enviar correos de confirmación (no bloqueante)
-    this.enviarCorreosConfirmacion(resultado.idReserva).catch((error) => {
+    this.enviarCorreosConfirmacion(resultado.reservaIdNumerico).catch((error) => {
       console.error('Error al enviar correos:', error);
     });
 
@@ -39,9 +39,9 @@ export class ReservasController {
   /**
    * Método privado para enviar correos de confirmación
    */
-  private async enviarCorreosConfirmacion(reservaId: string) {
+  private async enviarCorreosConfirmacion(reservaId: number) {
     try {
-      const reserva = await this.reservasService.obtenerReservaPorId(reservaId);
+      const reserva = await this.reservasService.obtenerReservaPorId(String(reservaId));
 
       // Enviar correo al visitante
       await this.mailService.enviarConfirmacionVisitante(reserva);

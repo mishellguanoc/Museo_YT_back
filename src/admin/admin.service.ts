@@ -50,7 +50,7 @@ export class AdminService {
    */
   async obtenerDetalleReserva(id: string) {
     const reserva = await this.prisma.reserva.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: {
         visitantes: true,
         feedback: true,
@@ -69,7 +69,7 @@ export class AdminService {
    */
   async cancelarReserva(id: string) {
     const reserva = await this.prisma.reserva.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
     });
 
     if (!reserva) {
@@ -85,7 +85,7 @@ export class AdminService {
 
     // Actualizar estado a cancelado
     const reservaActualizada = await this.prisma.reserva.update({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       data: {
         estado: 'CANCELADO',
       },

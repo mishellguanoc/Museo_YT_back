@@ -12,7 +12,7 @@ datasource db {
 
 // Modelo principal: Reserva
 model Reserva {
-  id                String      @id @default(cuid())
+  id                Int         @id @default(autoincrement())
   nombreResponsable String
   cedula            String
   correo            String
@@ -39,7 +39,7 @@ model Visitante {
   id        String   @id @default(cuid())
   nombre    String
   cedula    String
-  reservaId String
+  reservaId Int
   
   // Relación con Reserva
   reserva   Reserva  @relation(fields: [reservaId], references: [id], onDelete: Cascade)
@@ -52,7 +52,7 @@ model Visitante {
 // Modelo: Feedback (retroalimentación post-visita)
 model Feedback {
   id          String   @id @default(cuid())
-  reservaId   String   @unique
+  reservaId   Int      @unique
   calificacion Int     // 1-5 estrellas
   comentario  String?  @db.Text
   

@@ -19,7 +19,7 @@ export class FeedbackService {
 
     // 1️⃣ Verificar que la reserva existe
     const reserva = await this.prisma.reserva.findUnique({
-      where: { id: idReserva },
+      where: { id: parseInt(idReserva, 10) },
       include: {
         feedback: true,
       },
@@ -51,7 +51,7 @@ export class FeedbackService {
     // 5️⃣ Crear el feedback
     const feedback = await this.prisma.feedback.create({
       data: {
-        reservaId: idReserva,
+        reservaId: parseInt(idReserva, 10),
         calificacion,
         comentario: comentario || null,
       },
@@ -93,7 +93,7 @@ export class FeedbackService {
    */
   async obtenerFeedbackPorReserva(reservaId: string) {
     const feedback = await this.prisma.feedback.findUnique({
-      where: { reservaId },
+      where: { reservaId: parseInt(reservaId, 10) },
       include: {
         reserva: {
           select: {

@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { HorariosService } from '../horarios/horarios.service';
 import { CreateReservaDto } from './dto/create-reserva.dto';
-import { HORARIOS_DISPONIBLES } from '../common/constants';
+import { HORARIOS_DISPONIBLES, formatearIdReserva } from '../common/constants';
 
 @Injectable()
 export class ReservasService {
@@ -10,6 +10,17 @@ export class ReservasService {
     private prisma: PrismaService,
     private horariosService: HorariosService,
   ) {}
+
+  private parseFechaLocal(fecha: string): Date {
+    const [anio, mes, dia] = fecha.split('-').map(Number);
+    const fechaReserva = new Date(anio, mes - 1, dia);
+
+    if (isNaN(fechaReserva.getTime())) {
+      throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
+    }
+
+    return fechaReserva;
+  }
 
   /**
    * Crea una nueva reserva con todas las validaciones necesarias
@@ -22,8 +33,8 @@ export class ReservasService {
       throw new BadRequestException(`El horario ${hora} no está disponible`);
     }
 
-    // Convertir fecha string a Date
-    const fechaReserva = new Date(fecha);
+    // Convertir fecha string a Date local para evitar desplazamiento de zona horaria
+    const fechaReserva = this.parseFechaLocal(fecha);
 
     // 2️⃣ Validar que la fecha no sea pasada
     const hoy = new Date();
@@ -79,10 +90,11 @@ export class ReservasService {
 
       return {
         estado: 'confirmado',
-        idReserva: reserva.id,
+        idReserva: formatearIdReserva(reserva.id),
+        reservaIdNumerico: reserva.id,
         mensaje: 'Reserva confirmada exitosamente. Recibirás un correo de confirmación.',
         reserva: {
-          id: reserva.id,
+          id: formatearIdReserva(reserva.id),
           fecha: reserva.fecha,
           hora: reserva.hora,
           numeroPersonas: reserva.numeroPersonas,
@@ -99,7 +111,7 @@ export class ReservasService {
    */
   async obtenerReservaPorId(id: string) {
     const reserva = await this.prisma.reserva.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) },
       include: {
         visitantes: true,
         feedback: true,

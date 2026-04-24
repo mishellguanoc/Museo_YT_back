@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { formatearIdReserva } from '../common/constants';
 
 @Injectable()
 export class MailService {
@@ -22,7 +23,10 @@ export class MailService {
    * Envía correo de confirmación al visitante
    */
   async enviarConfirmacionVisitante(reserva: any) {
-    const fechaFormateada = new Date(reserva.fecha).toLocaleDateString('es-ES', {
+    const fechaISO =
+      reserva.fecha instanceof Date ? reserva.fecha.toISOString() : reserva.fecha.toString();
+    const [anio, mes, dia] = fechaISO.split('T')[0].split('-').map(Number);
+    const fechaFormateada = new Date(anio, mes - 1, dia).toLocaleDateString('es-ES', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -52,11 +56,34 @@ export class MailService {
   async enviarNotificacionAdmin(reserva: any) {
     const adminEmail = this.configService.get('ADMIN_EMAIL');
 
-    const fechaFormateada = new Date(reserva.fecha).toLocaleDateString('es-ES', {
+    console.log(
+      '📅 [Admin] reserva.fecha raw:',
+      reserva.fecha,
+      '| tipo:',
+      typeof reserva.fecha,
+      '| instanceof Date:',
+      reserva.fecha instanceof Date,
+    );
+    const fechaISO =
+      reserva.fecha instanceof Date ? reserva.fecha.toISOString() : reserva.fecha.toString();
+    const [anio, mes, dia] = fechaISO.split('T')[0].split('-').map(Number);
+    const fechaFormateada = new Date(anio, mes - 1, dia).toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
+    console.log(
+      '📅 [Admin] fechaISO:',
+      fechaISO,
+      '| anio:',
+      anio,
+      '| mes:',
+      mes,
+      '| dia:',
+      dia,
+      '| fechaFormateada:',
+      fechaFormateada,
+    );
 
     const htmlContent = this.generarHtmlAdmin(reserva, fechaFormateada);
 
@@ -82,6 +109,7 @@ export class MailService {
     const museoNombre = this.configService.get('MUSEO_NOMBRE');
     const museoDireccion = this.configService.get('MUSEO_DIRECCION');
     const museoTelefono = this.configService.get('MUSEO_TELEFONO');
+    const museoLinkUbicacion = this.configService.get('MUSEO_LINK_UBICACION');
 
     return `
       <!DOCTYPE html>
@@ -123,7 +151,7 @@ export class MailService {
                 <span class="label">👥 Número de personas:</span> ${reserva.numeroPersonas}
               </div>
               <div class="info-row">
-                <span class="label">🎫 Código de reserva:</span> ${reserva.id}
+                <span class="label">🎫 Código de reserva:</span> ${formatearIdReserva(reserva.id)}
               </div>
             </div>
 
@@ -134,6 +162,9 @@ export class MailService {
               </div>
               <div class="info-row">
                 <span class="label">Teléfono:</span> ${museoTelefono}
+              </div>
+              <div class="info-row">
+                <span class="label">Ubicación:</span> <a href="${museoLinkUbicacion}" target="_blank">Ver en el mapa</a>
               </div>
             </div>
 
@@ -208,7 +239,7 @@ export class MailService {
               <span class="label">Número de personas:</span> ${reserva.numeroPersonas}
             </div>
             <div class="info-row">
-              <span class="label">ID de reserva:</span> ${reserva.id}
+              <span class="label">ID de reserva:</span> ${formatearIdReserva(reserva.id)}
             </div>
             
             <p style="margin-top: 20px; color: #7f8c8d;">

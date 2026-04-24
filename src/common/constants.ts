@@ -11,3 +11,10 @@ export const HORARIOS_DISPONIBLES = [
 ];
 
 export const MAX_PERSONAS_POR_HORARIO = 10;
+
+/**
+ * Formatea el ID numérico de la reserva a formato "MAYT-001"
+ */
+export function formatearIdReserva(id: number): string {
+  return `MAYT-${String(id).padStart(3, '0')}`;
+}
