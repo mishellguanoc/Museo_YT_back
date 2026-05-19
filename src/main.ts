@@ -5,8 +5,11 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
   
+  console.log('Iniciando aplicación...');
+  console.log('PORT:', process.env.PORT);
+  console.log('DATABASE_URL existe:', !!process.env.DATABASE_URL);
+  const app = await NestFactory.create(AppModule);
 
   // Habilitar CORS para frontend
   app.enableCors({
@@ -14,10 +17,14 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-  // Puerto dinámico para Render
-  await app.listen(process.env.PORT || 3000);
 
-  console.log(`Servidor corriendo en puerto ${process.env.PORT || 3000}`);
+  const port = process.env.PORT || 3000;
+
+  // Puerto dinámico para Render
+  await app.listen(port);
+
+  console.log(`API del Museo ejecutándose en puerto ${port}`);
+  console.log(`Base de datos: PostgreSQL (Supabase)`);
 
 
   // Validación global de DTOs
@@ -33,12 +40,10 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-  const port = process.env.PORT || 3000;
+  
   await app.listen(port);
 
-  console.log(` API del Museo ejecutándose en: http://localhost:${port}`);
-  console.log(` Base de datos: PostgreSQL (Supabase)`);
-
+ 
 
 bootstrap();
 }
