@@ -6,6 +6,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
 
   // Habilitar CORS para frontend
   app.enableCors({
@@ -13,6 +14,11 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+  // Puerto dinámico para Render
+  await app.listen(process.env.PORT || 3000);
+
+  console.log(`Servidor corriendo en puerto ${process.env.PORT || 3000}`);
+
 
   // Validación global de DTOs
   app.useGlobalPipes(
@@ -30,8 +36,9 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  console.log(`🚀 API del Museo ejecutándose en: http://localhost:${port}`);
-  console.log(`📊 Base de datos: PostgreSQL (Supabase)`);
-}
+  console.log(` API del Museo ejecutándose en: http://localhost:${port}`);
+  console.log(` Base de datos: PostgreSQL (Supabase)`);
+
 
 bootstrap();
+}
