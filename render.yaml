@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: museo-reservas-api
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        scope: runtime
+    region: oregon
+    autoDeploy: true
