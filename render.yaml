@@ -1,14 +1,13 @@
 services:
   - type: web
     name: museo-reservas-api
-    runtime: node
+    runtime: docker
     plan: free
-    buildCommand: npm install --include=dev && npm run build
-    startCommand: npm start:prod
+    dockerfile: ./Dockerfile
+    region: oregon
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         scope: runtime
-    region: oregon
-    autoDeploy: true
