@@ -3,7 +3,7 @@ services:
     name: museo-reservas-api
     runtime: node
     plan: free
-    buildCommand: npm ci --include=dev && npm run build && ls -la dist/
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start:prod
     envVars:
       - key: NODE_ENV
